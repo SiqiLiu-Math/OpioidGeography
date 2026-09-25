@@ -1,3 +1,6 @@
+import networkx as nx
+import numpy as np
+import pandas as pd
 
 state_names = {
     0: "AL",
@@ -52,70 +55,70 @@ state_names = {
 }
 
 state_pos = {
-     0: (2,-2),   # AL
-     1: (-3,-1),  # AZ
-     2: (0,-1),   # AR
-     3: (-5,0),   # CA
-     4: (-2,0),   # CO
-     5: (6,1),    # CT
-     6: (4,-1),   # DC
-     7: (5,0),    # DE
-     8: (3,-3),   # FL
-     9: (3,-2),   # GA
-    10: (-3,1),   # ID
-    11: (1,1),    # IL
-    12: (2,1),    # IN
-    13: (0,1),    # IA
-    14: (-1,0),   # KS
-    15: (2,0),    # KY
-    16: (0,-2),   # LA
-    17: (7,3),    # ME
-    18: (4,0),    # MD
-    19: (6,2),    # MA
-    20: (2,2),    # MI
-    21: (0,2),    # MN
-    22: (1,-2),   # MS
-    23: (0,0),    # MO
-    24: (-2,2),   # MT
-    25: (-1,1),   # NE
-    26: (-4,0),   # NV
-    27: (6,3),    # NH
-    28: (5,1),    # NJ
-    29: (-2,-1),  # NM
-    30: (5,2),    # NY
-    31: (4,-2),   # NC
-    32: (-1,3),   # ND
-    33: (3,1),    # OH
-    34: (-1,-1),  # OK
-    35: (-4,1),   # OR
-    36: (4,1),    # PA
-    37: (7,1),    # RI
-    38: (4,-3),   # SC
-    39: (-1,2),   # SD
-    40: (2,-1),   # TN
-    41: (-1,-2),  # TX
-    42: (-3,0),   # UT
-    43: (5,3),    # VT
-    44: (3,-1),   # VA
-    45: (-4,2),   # WA
-    46: (3,0),    # WV
-    47: (1,2),    # WI
-    48: (-2,1),   # WY
+    "AL": (2,-2),   # AL
+    "AZ": (-3,-1),  # AZ
+    "AR": (0,-1),   # AR
+    "CA": (-5,0),   # CA
+    "CO": (-2,0),   # CO
+    "CT": (6,1),    # CT
+    "DC": (4,-1),   # DC
+    "DE": (5,0),    # DE
+    "FL": (3,-3),   # FL
+    "GA": (3,-2),   # GA
+    "ID": (-3,1),   # ID
+    "IL": (1,1),    # IL
+    "IN": (2,1),    # IN
+    "IA": (0,1),    # IA
+    "KS": (-1,0),   # KS
+    "KY": (2,0),    # KY
+    "LA": (0,-2),   # LA
+    "ME": (7,3),    # ME
+    "MD": (4,0),    # MD
+    "MA": (6,2),    # MA
+    "MI": (2,2),    # MI
+    "MN": (0,2),    # MN
+    "MS": (1,-2),   # MS
+    "MO": (0,0),    # MO
+    "MT": (-2,2),   # MT
+    "NE": (-1,1),   # NE
+    "NV": (-4,0),   # NV
+    "NH": (6,3),    # NH
+    "NJ": (5,1),    # NJ
+    "NM": (-2,-1),  # NM
+    "NY": (5,2),    # NY
+    "NC": (4,-2),   # NC
+    "ND": (-1,3),   # ND
+    "OH": (3,1),    # OH
+    "OK": (-1,-1),  # OK
+    "OR": (-4,1),   # OR
+    "PA": (4,1),    # PA
+    "RI": (7,1),    # RI
+    "SC": (4,-3),   # SC
+    "SD": (-1,2),   # SD
+    "TN": (2,-1),   # TN
+    "TX": (-1,-2),  # TX
+    "UT": (-3,0),   # UT
+    "VT": (5,3),    # VT
+    "VA": (3,-1),   # VA
+    "WA": (-4,2),   # WA
+    "WV": (3,0),    # WV
+    "WI": (1,2),    # WI
+    "WY": (-2,1),   # WY
 }
 
 state_abbr = {
     "Alabama": "AL",
-    "Alaska": "AK",
+    #"Alaska": "AK",
     "Arizona": "AZ",
     "Arkansas": "AR",
     "California": "CA",
     "Colorado": "CO",
     "Connecticut": "CT",
-    "Delaware": "DE",
     "District of Columbia": "DC",
+    "Delaware": "DE",
     "Florida": "FL",
     "Georgia": "GA",
-    "Hawaii": "HI",
+    #"Hawaii": "HI",
     "Idaho": "ID",
     "Illinois": "IL",
     "Indiana": "IN",
@@ -124,6 +127,12 @@ state_abbr = {
     "Kentucky": "KY",
     "Louisiana": "LA",
     "Maine": "ME",
+    "Maryland": "MD",
+    "Massachusetts": "MA",
+    "Michigan": "MI",
+    "Minnesota": "MN",
+    "Mississippi": "MS",
+    "Missouri": "MO",
     "Montana": "MT",
     "Nebraska": "NE",
     "Nevada": "NV",
@@ -136,12 +145,6 @@ state_abbr = {
     "Ohio": "OH",
     "Oklahoma": "OK",
     "Oregon": "OR",
-    "Maryland": "MD",
-    "Massachusetts": "MA",
-    "Michigan": "MI",
-    "Minnesota": "MN",
-    "Mississippi": "MS",
-    "Missouri": "MO",
     "Pennsylvania": "PA",
     "Rhode Island": "RI",
     "South Carolina": "SC",
@@ -156,3 +159,13 @@ state_abbr = {
     "Wisconsin": "WI",
     "Wyoming": "WY"
 }
+
+state_abbr_rev = {v: k for k, v in state_abbr.items()}
+
+state_adjacency = pd.read_csv("../Data/adjacency_matrix.csv", index_col=0)
+adjacency_matrix = state_adjacency.values
+state_graph = nx.from_numpy_array(adjacency_matrix)
+state_graph = nx.relabel_nodes(state_graph, state_names)
+
+opioid_data = pd.read_csv("../Data/opioid_overdose_death_rate.csv", index_col=0)
+all_drug_data = pd.read_csv("../Data/all_drug_overdose_death_rate.csv", index_col=0)
